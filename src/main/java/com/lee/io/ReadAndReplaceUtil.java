@@ -43,37 +43,17 @@ public class ReadAndReplaceUtil {
             } catch (IOException e) {
                 logger.info(e.getMessage());
             } finally {
-                closeBufferedReader(bufferedReader);
-                closeFileWriter(fileWriter);
-                closeFileReader(fileReader);
+                close(bufferedReader);
+                close(fileWriter);
+                close(fileReader);
             }
         }
     }
 
-    private void closeFileWriter(FileWriter fileWriter) {
-        if (fileWriter != null) {
+    private void close (Closeable closeable) {
+        if (closeable != null) {
             try {
-                fileWriter.close();
-            } catch (IOException e) {
-                logger.info(e.getMessage());
-            }
-        }
-    }
-
-    private void closeFileReader(FileReader fileReader) {
-        if (fileReader != null) {
-            try {
-                fileReader.close();
-            } catch (IOException e) {
-                logger.info(e.getMessage());
-            }
-        }
-    }
-
-    private void closeBufferedReader(BufferedReader bufferedReader) {
-        if (bufferedReader != null) {
-            try {
-                bufferedReader.close();
+                closeable.close();
             } catch (IOException e) {
                 logger.info(e.getMessage());
             }
