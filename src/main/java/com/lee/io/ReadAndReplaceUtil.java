@@ -1,6 +1,9 @@
 package com.lee.io;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +14,8 @@ import java.util.regex.Pattern;
  * @author superlee
  */
 public class ReadAndReplaceUtil {
+
+    private static final Logger logger = LoggerFactory.getLogger(ReadAndReplaceUtil.class);
 
     public static void main(String[] args) {
         File file = new File("D:\\idea_workspace\\gitlab\\iam-service");
@@ -29,23 +34,18 @@ public class ReadAndReplaceUtil {
             StringBuilder sb = new StringBuilder();
             try {
                 fileReader = new FileReader(file);
+                fileWriter = new FileWriter(file);
                 bufferedReader = new BufferedReader(fileReader);
                 readAndReplace(search, bufferedReader, sb);
+                fileWriter.write(sb.toString());
             } catch (FileNotFoundException e) {
-                e.printStackTrace();
+                logger.info(e.getMessage());
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.info(e.getMessage());
             } finally {
                 closeBufferedReader(bufferedReader);
-                closeFileReader(fileReader);
-            }
-            try {
-                fileWriter = new FileWriter(file);
-                fileWriter.write(sb.toString());
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
                 closeFileWriter(fileWriter);
+                closeFileReader(fileReader);
             }
         }
     }
@@ -55,7 +55,7 @@ public class ReadAndReplaceUtil {
             try {
                 fileWriter.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.info(e.getMessage());
             }
         }
     }
@@ -65,7 +65,7 @@ public class ReadAndReplaceUtil {
             try {
                 fileReader.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.info(e.getMessage());
             }
         }
     }
@@ -75,7 +75,7 @@ public class ReadAndReplaceUtil {
             try {
                 bufferedReader.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.info(e.getMessage());
             }
         }
     }
@@ -85,7 +85,7 @@ public class ReadAndReplaceUtil {
         while ((str = bufferedReader.readLine()) != null) {
             String trimString = str.trim();
             if (Pattern.matches(search, trimString)) {
-                String prefix = str.substring(0, str.indexOf("@"));
+                String prefix = str.substring(0, str.indexOf('@'));
                 sb.append(prefix);
                 sb.append(trimString.substring(0, trimString.length() - 1));
                 sb.append(", UUID = ");
