@@ -17,16 +17,14 @@ public class ReadAndReplaceUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(ReadAndReplaceUtil.class);
 
-    public static void main(String[] args) {
-        File file = new File("D:\\idea_workspace\\gitlab\\iam-service");
+    public static void execute(String path, String searchPattern, String fileSuffix) {
+        File file = new File(path);
         List<File> controllerFiles = new ArrayList<>();
-        searchControllerFiles(file, controllerFiles);
-        ReadAndReplaceUtil generate = new ReadAndReplaceUtil();
-        generate.dealWithControllerFiles(controllerFiles);
+        searchControllerFiles(file, controllerFiles, fileSuffix);
+        dealWithControllerFiles(controllerFiles, searchPattern);
     }
 
-    private void dealWithControllerFiles(List<File> controllerFiles) {
-        String search = "@Permission\\(.*\\)";
+    private static void dealWithControllerFiles(List<File> controllerFiles, String searchPattern) {
         for (File file : controllerFiles) {
             FileReader fileReader = null;
             BufferedReader bufferedReader = null;
@@ -34,9 +32,9 @@ public class ReadAndReplaceUtil {
             StringBuilder sb = new StringBuilder();
             try {
                 fileReader = new FileReader(file);
-                fileWriter = new FileWriter(file);
                 bufferedReader = new BufferedReader(fileReader);
-                readAndReplace(search, bufferedReader, sb);
+                readAndReplace(searchPattern, bufferedReader, sb);
+                fileWriter = new FileWriter(file);
                 fileWriter.write(sb.toString());
             } catch (FileNotFoundException e) {
                 logger.info(e.getMessage());
@@ -50,7 +48,7 @@ public class ReadAndReplaceUtil {
         }
     }
 
-    private void close (Closeable closeable) {
+    private static void close (Closeable closeable) {
         if (closeable != null) {
             try {
                 closeable.close();
@@ -60,11 +58,11 @@ public class ReadAndReplaceUtil {
         }
     }
 
-    private void readAndReplace(String search, BufferedReader bufferedReader, StringBuilder sb) throws IOException {
+    private static void readAndReplace(String search, BufferedReader bufferedReader, StringBuilder sb) throws IOException {
         String str;
         while ((str = bufferedReader.readLine()) != null) {
             String trimString = str.trim();
-            if (Pattern.matches(search, trimString)) {
+            if (Pattern.matches(search, trimString) && !trimString.contains("UUID")) {
                 String prefix = str.substring(0, str.indexOf('@'));
                 sb.append(prefix);
                 sb.append(trimString.substring(0, trimString.length() - 1));
@@ -79,13 +77,13 @@ public class ReadAndReplaceUtil {
         }
     }
 
-    private static List<File> searchControllerFiles(File file, List<File> controllerFiles) {
+    private static List<File> searchControllerFiles(File file, List<File> controllerFiles, String fileSuffix) {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             for (File f : files) {
-                searchControllerFiles(f, controllerFiles);
+                searchControllerFiles(f, controllerFiles, fileSuffix);
             }
-        } else if (file.getName().endsWith("Controller.java")) {
+        } else if (file.getName().endsWith(fileSuffix)) {
             controllerFiles.add(file);
         }
         return controllerFiles;
