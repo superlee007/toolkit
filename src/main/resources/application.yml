@@ -1,0 +1,6 @@
+spring:
+  ldap:
+    urls: ldap://ldap.forumsys.com
+    base: cn=read-only-admin,dc=example,dc=com
+    username: admin
+    password: password

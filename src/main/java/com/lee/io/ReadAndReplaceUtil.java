@@ -11,6 +11,7 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
+ * 一个读取特定后缀名文件，然后按指定正则匹配字符串，然后替换的工具
  * @author superlee
  */
 public class ReadAndReplaceUtil {
